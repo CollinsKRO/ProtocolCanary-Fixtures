@@ -14,12 +14,26 @@ script:
 
 To add one:
 
+**Short version** (the detailed walkthrough follows below):
+
+- **Source it** — identify the upstream behavior from an authoritative source
+  you have actually checked, and record it in `source_reference` plus a header
+  comment explaining how the expected value was derived.
+- **Write it** — stable, repository-unique `p<protocol>-<surface>-<slug>` ID;
+  deterministic input; an explicit expected result using the surface's typed
+  assertion vocabulary.
+- **Check it** — run `make validate` (or `python3 tools/validate/validate.py` directly).
+- **Document & test it** — update the relevant `docs/protocol-NN.md` table
+  (and the pack's `README.md` for a new CAP or surface), then run
+  `make test` (or `python3 -m unittest discover tests` directly).
+
 1. **Identify the upstream behavior.** Read the CAP text, the upstream XDR
    definition, the upstream implementation, or the official release/API
    docs — in that order of preference. Never cite a source you have not
    actually checked describes the specific behavior you are asserting.
 2. **Add source provenance.** Every fixture sets `source_reference` to an
-   authoritative URL or CAP identifier, and its header comment (a `#`
+   authoritative URL or CAP identifier (note: omitting it currently produces
+   a warning, not a validator error), and its header comment (a `#`
    comment block above the TOML body) explains, in prose, how the expected
    value was derived or observed — e.g. "built with the official
    `stellar-xdr` 28.0.0 crate against the CAP-0083 `StellarValue` type",
@@ -38,10 +52,17 @@ To add one:
 5. **Define an explicit expected result** using the assertion vocabulary
    the target surface actually supports (see "Fixture schema" below) — no
    generic string matching when a typed assertion exists.
-6. **Validate the fixture**: `python3 tools/validate/validate.py`.
+6. **Validate the fixture**: `make validate` — or
+   `python3 tools/validate/validate.py` directly.
 7. **Add/update documentation**: the relevant `docs/protocol-NN.md` table
    and, if you added a new CAP or surface, the pack's `README.md`.
-8. **Run the repository tests**: `python3 -m unittest discover tests`.
+8. **Run the repository tests**: `make test` — or
+   `python3 -m unittest discover tests` directly.
+
+Before pushing, `make check` runs both of the above in one command, in
+the same order CI (`.github/workflows/validate.yml`) runs them.
+
+> **Note**: Do not add a `manifest.toml` or similar discovery/enumeration file. The loader recursively treats every `*.toml` file under `--fixtures-dir` as a fixture, so a manifest `.toml` file would be mis-parsed as a malformed fixture and fail the run (see [README.md](README.md#repository-relationship)).
 
 No fixture should be merged solely because it makes some consumer's CI
 green. If you cannot pin down the exact expected wire representation or
@@ -71,8 +92,8 @@ category = "cap-0083"
 description = "..."
 source_reference = "CAP-0083"          # optional but expected for protocol-specific fixtures
 required_capabilities = []              # optional, see fixture-contract.md
-input_file = "..."                      # optional, path relative to this file
-expected_file = "..."                   # optional
+input_file = "..."                      # optional, path relative to this file (currently unused by any fixture)
+expected_file = "..."                   # optional (currently unused by any fixture)
 ```
 
 Per-surface body (everything else in the file):
@@ -102,6 +123,10 @@ and is released.
 - A claim about current live network state (a specific ledger sequence, a
   specific balance) unless the fixture is explicitly and narrowly scoped as
   a live-network check with its assumptions documented.
+- A `manifest.toml` or any discovery/enumeration file. The loader recursively
+  parses every `*.toml` file under `--fixtures-dir` as a fixture, so a manifest
+  file would be mis-parsed as a malformed fixture and fail validation (see
+  [README.md](README.md#repository-relationship)).
 
 ## Deprecating a fixture
 
@@ -114,3 +139,12 @@ it in a later, separate change once nothing depends on it.
 
 No build system is required. `tools/validate/validate.py` uses only the
 Python 3.11+ standard library (`tomllib`), so there is nothing to install.
+
+For convenience, a `Makefile` wraps the two commands CI runs:
+
+- `make validate` — structural fixture validation.
+- `make test` — the repository test suite.
+- `make check` — both, in CI's order, stopping at the first failure.
+
+The underlying commands work identically if run directly, so `make` is
+not a requirement for contributing — it only saves typing.

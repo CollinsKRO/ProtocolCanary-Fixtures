@@ -17,6 +17,9 @@ All notable changes to this project are documented in this file.
   - `p28-xdr-cap83-empty-tx-set` — CAP-0083 `StellarValue`
     (`STELLAR_VALUE_EMPTY_TX_SET`) round-trip, built with the official
     `stellar-xdr` 28.0.0 crate.
+  - `p28-xdr-cap83-empty-tx-set-malformed` — a truncated encoding of the
+    same CAP-0083 `StellarValue` shape is correctly rejected, mirroring the
+    CAP-0085 malformed-input fixture.
   - `p28-xdr-cap85-external-ref-roundtrip` and
     `p28-xdr-cap85-external-ref-malformed` — CAP-0085
     `ContractExecutable` (`CONTRACT_EXECUTABLE_EXTERNAL_REF`) round-trip

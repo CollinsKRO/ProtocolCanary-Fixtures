@@ -14,6 +14,7 @@ enumeration.
 | Fixture | Surface | CAP | What it proves |
 |---|---|---|---|
 | [`xdr/cap-0083/p28-xdr-cap83-empty-tx-set.toml`](xdr/cap-0083/p28-xdr-cap83-empty-tx-set.toml) | xdr | CAP-0083 | A `StellarValue` using `STELLAR_VALUE_EMPTY_TX_SET` round-trips byte-for-byte. |
+| [`xdr/cap-0083/p28-xdr-cap83-empty-tx-set-malformed.toml`](xdr/cap-0083/p28-xdr-cap83-empty-tx-set-malformed.toml) | xdr | CAP-0083 | A truncated `StellarValue` using `STELLAR_VALUE_EMPTY_TX_SET` is correctly rejected, not silently accepted. |
 | [`xdr/cap-0085/p28-xdr-cap85-external-ref-roundtrip.toml`](xdr/cap-0085/p28-xdr-cap85-external-ref-roundtrip.toml) | xdr | CAP-0085 | A `ContractExecutable` using `CONTRACT_EXECUTABLE_EXTERNAL_REF` round-trips byte-for-byte. |
 | [`xdr/cap-0085/p28-xdr-cap85-external-ref-malformed.toml`](xdr/cap-0085/p28-xdr-cap85-external-ref-malformed.toml) | xdr | CAP-0085 | A truncated `ContractExecutable::ExternalRef` encoding is correctly rejected, not silently accepted. |
 | [`rpc/p28-rpc-network.toml`](rpc/p28-rpc-network.toml) | rpc | — | A configured RPC endpoint's `getNetwork` reports protocol 28 with a `passphrase` field. |

@@ -22,10 +22,16 @@ being closed, by adding a new `StellarValueType` case,
 `txSetHash`, with the real hash of the dropped transaction set moved into
 the nested `proposedValue.txSetHash`.
 
-**What this pack tests.** `xdr/cap-0083/p28-xdr-cap83-empty-tx-set.toml`
-asserts that a real, well-formed `StellarValue` using this ext case
-round-trips byte-for-byte through the project's configured `stellar-xdr`
-dependency.
+**What this pack tests.**
+
+- `xdr/cap-0083/p28-xdr-cap83-empty-tx-set.toml`: a real, well-formed
+  `StellarValue` using this ext case round-trips byte-for-byte through the
+  project's configured `stellar-xdr` dependency.
+- `xdr/cap-0083/p28-xdr-cap83-empty-tx-set-malformed.toml`: a truncated
+  encoding of the same shape — the nested `proposedValue.txSetHash` cut
+  short after 12 of its 32 bytes, with the rest of the `proposedValue` arm
+  (including the `lcValueSignature`) missing entirely — is correctly
+  rejected, not silently accepted.
 
 **Surface.** XDR only. This is validator-internal consensus behavior, not
 something a Soroban transaction or RPC call can meaningfully reproduce —
